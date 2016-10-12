@@ -10,16 +10,17 @@
 
 class WaitClient;
 class WaitCharacter;
+class AttendClient;
 
 class Server{
 private:
   SocketAcceptor acceptor;
   WaitClient* waitClient;
   WaitCharacter* waitQ;
-  std::vector<Thread*> esperadores;
+  //std::vector<AttendClient*> atendedores;
   std::vector<Colectivo> colectivos;
   std::vector<TimeStop> paradas;
-  std::vector<SocketConnector> connectors;
+  //std::vector<SocketConnector> connectors;
   std::vector<std::string> parse(const char* linea);
   void procesarColectivos(std::ifstream& coletivos);
   void procesarParadas(std::ifstream& paradasFile);
@@ -31,7 +32,7 @@ public:
   void ejecutar(int argc, char const *argv[]);
   SocketAcceptor& getAcceptor();
   void close();
-  void newClient(SocketConnector connector);
+  void newClient();
   ~Server();
 };
 

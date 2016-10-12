@@ -2,7 +2,6 @@
 #include "server.h"
 #include <fstream>
 #include <string.h>
-#include <iostream>
 #include <sstream>
 #include "server_socket_acceptor.h"
 #include "server_colectivo.h"
@@ -10,6 +9,7 @@
 #include "server_wait_character.h"
 #include "server_wait_client.h"
 #include "server_thread.h"
+#include "server_attend_client.h"
 
 using std::cout;
 using std::endl;
@@ -28,18 +28,25 @@ Server::Server(){
 
 Server::~Server(){
   std::cout << "Server destroy" << std::endl;
-  std::cout << "Tengo " <<paradas.size()<<" paradas"<< std::endl;
+  //std::cout << "Tengo " <<paradas.size()<<" paradas"<< std::endl;
+  waitClient->join();
+  delete(waitQ);
+  delete(waitClient);
 }
 
 void Server::close(){
   std::cout << "Server close" << std::endl;
   waitClient->setEstate(false);
+  acceptor.cclose();
 }
 
 
-void Server::newClient(SocketConnector connector){
+void Server::newClient(){
   std::cout << "Cliente conectado" << std::endl;
-  connectors.push_back(connector);
+  //connectors.push_back(connector);
+  //AttendClient* attend = new AttendClient(*this,connector);
+  //atendedores.push_back(attend);
+  //attend->start();
 }
 
 vector<string> Server::parse(const char* linea){

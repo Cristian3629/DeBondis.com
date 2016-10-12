@@ -76,6 +76,13 @@ int SocketConnector::creceive(void* buffer, int size){
   return 0;
 }
 
+
+int SocketConnector::cclose(){
+  shutdown(fd,SHUT_RDWR);
+  close(fd);
+  return 0;
+}
+
 int SocketConnector::cconnect(const char* ip, int port){
   std::cout << "SocketConnector::cconnect()" << std::endl;
   struct sockaddr_in addr;
@@ -84,6 +91,16 @@ int SocketConnector::cconnect(const char* ip, int port){
 	addr.sin_family = AF_INET;
 	int aux = connect(fd, (struct sockaddr*)&addr, sizeof(addr));
 	return aux;
+}
+
+SocketConnector::SocketConnector(SocketConnector&& other){
+	this->fd = std::move(other.fd);
+}
+
+
+SocketConnector& SocketConnector::operator=(SocketConnector&& other) {
+	this->fd = std::move(other.fd);
+	return *this;
 }
 
 SocketConnector::~SocketConnector(){

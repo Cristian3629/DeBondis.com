@@ -16,8 +16,10 @@ void WaitClient::run(){
   SocketAcceptor& acceptor = server.getAcceptor();
   while(estateActive){
     SocketConnector connector = acceptor.saccept();
-    server.newClient(connector);
+    connectors.push_back(static_cast<SocketConnector&&>(connector));
+    server.newClient();
   }
+  std::cout << "WaitClient exit" << std::endl;
 }
 
 void WaitClient::setEstate(bool estate){

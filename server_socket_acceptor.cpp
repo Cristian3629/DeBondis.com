@@ -50,13 +50,29 @@ int SocketAcceptor::slisten(int cant){
   return 0;
 }
 
+
 SocketConnector SocketAcceptor::saccept(){
   std::cout << "SocketAcceptor::acept()" << std::endl;
   int fd_connector = accept(fd,NULL,NULL);
   if(fd_connector == -1){
     std::cout << "Error accept" << std::endl;
-    return 1;
   }
   SocketConnector connector(fd_connector);
   return connector;
+}
+
+int SocketAcceptor::cclose(){
+  shutdown(fd,SHUT_RDWR);
+  close(fd);
+  return 0;
+}
+
+SocketAcceptor::SocketAcceptor(SocketAcceptor&& other){
+	this->fd = std::move(other.fd);
+}
+
+
+SocketAcceptor& SocketAcceptor::operator=(SocketAcceptor&& other){
+	this->fd = std::move(other.fd);
+	return *this;
 }

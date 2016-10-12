@@ -1,19 +1,36 @@
 #include <iostream> //cout
 #include "client.h"
 #include <stdlib.h> //atoi()
+#include <sstream>
+#include <string.h>
 #include "common_socket_connector.h"
-
+#include <vector>
 using std::string;
 using std::cin;
-
+using std::stringstream;
+using std::vector;
 
 Client::Client(){
-  SocketConnector connector;
+  //SocketConnector connector;
 }
 Client::~Client(){}
 
+int Client::getSizeBuffer(int size){
+  return 1 + (size-1)*4;
+ }
+
 void Client::ejecuteCommand(string command){
   std::cout << "ejecutando el comando:" <<command<< std::endl;
+  stringstream ss(command);
+  string token;
+  vector<string> v;
+  while (ss >> token){
+    //std::cout << token.c_str() << ":"<<sizeof(token.c_str())<<std::endl;
+    v.push_back(token.c_str());
+    //const char* ch = token.c_str();
+    //std::cout << "ch:" <<ch<<"-"<<sizeof(*ch)<<"-"<<strlen(ch)<< std::endl;
+  }
+  std::cout << "Tengo que mandar " <<getSizeBuffer(v.size())<<" bytes"<< std::endl;
 }
 
 void Client::getCommand(){

@@ -2,6 +2,7 @@
 #define ATTENDCLIENT_H
 
 #include "server_thread.h"
+#include "common_socket_connector.h"
 
 class Server;
 

@@ -1,10 +1,13 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 #include "common_socket_connector.h"
+#include "common_translator_command.h"
 
 class Client{
 private:
   SocketConnector connector;
+  TranslatorCommand translator;
+  int getSizeBuffer(int size);
 public:
   Client();
   void getCommand();
