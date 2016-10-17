@@ -5,9 +5,10 @@
 
 class Client{
 private:
-  SocketConnector connector;
+  SocketConnector* connector;
   TranslatorCommand translator;
   int getSizeBuffer(int size);
+  int getUnixTime(std::string date);
 public:
   Client();
   void getCommand();

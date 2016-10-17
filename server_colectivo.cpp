@@ -1,33 +1,34 @@
 #include "server_colectivo.h"
+#include "server_date.h"
 #include <iostream> //cout
-#include <string>
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
 
-Colectivo::Colectivo(vector<string> v){
-  std::cout << "Colectivo create" << std::endl;
-  linea = v[0];
-  vector<string> aux;
-  int size = v.size();
-  for (int i = 1; i < size; i++) {
-    aux.push_back(v[i]);
-  }
-  paradas = aux;
-}
 
-Colectivo::~Colectivo(){
-  std::cout << "Colectivo destroy" << std::endl;
+Colectivo::Colectivo(ColectivoRecorrido& recorridoColectivo, int timeLnx):recorrido(recorridoColectivo),timeLinux(timeLnx){
 }
 
 
-void Colectivo::print(){
-  std::cout << "Mi linea es:" << linea << std::endl;
-  size_t  size = paradas.size();
-  std::cout << "Mis paradas:";
-  for (size_t i = 0; i < size; i++) {
-    std::cout << paradas[i] <<" ";
-  }
-  std::cout<<std::endl;
+Colectivo::~Colectivo(){}
+
+
+bool Colectivo::isBus(int linea){
+  return recorrido.isBus(linea);
+}
+
+int Colectivo::getLinea(){
+  return recorrido.getLinea();
+}
+Date Colectivo::getDate(){
+  Date newDate(timeLinux);
+  return newDate;
+}
+
+int Colectivo::getTimeToStop(int first, int end){
+  std::cout << recorrido.getTimeToStop(end) <<"-"<<recorrido.getTimeToStop(first)<< std::endl;
+  return recorrido.getTimeToStop(end) - recorrido.getTimeToStop(first);
+}
+
+
+int Colectivo::getTimeToStop(int parada){
+  std::cout << "Colectivo::getTimeToStop" << std::endl;
+  return recorrido.getTimeToStop(parada);
 }

@@ -8,6 +8,7 @@
 class Thread{
 private:
 	std::thread thread;
+protected:
 	Thread(const Thread&) = delete;
 	Thread& operator=(const Thread&) = delete;
 	Thread(Thread&& other);

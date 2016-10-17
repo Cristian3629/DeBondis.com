@@ -7,11 +7,14 @@
 
 class TimeStop{
 private:
-  std::string primeraParada;
-  std::string segundaParada;
+  int primeraParada;
+  int segundaParada;
   int time;
 public:
   TimeStop(std::vector<std::string> v);
+  bool isTimeOfStop(int start,int end);
+  bool isEnd(int end);
+  int getTime();
   void print();
   ~TimeStop();
 };

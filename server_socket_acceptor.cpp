@@ -1,5 +1,6 @@
 #include "server_socket_acceptor.h"
 #include "common_socket_connector.h"
+#include "common_os_error.h"
 #include <iostream> //cout
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -55,10 +56,12 @@ SocketConnector SocketAcceptor::saccept(){
   std::cout << "SocketAcceptor::acept()" << std::endl;
   int fd_connector = accept(fd,NULL,NULL);
   if(fd_connector == -1){
-    std::cout << "Error accept" << std::endl;
+    std::cout << "SocketAcceptor::Error accept" << std::endl;
+    throw 1;
+  }else{
+    SocketConnector connector(fd_connector);
+    return connector;
   }
-  SocketConnector connector(fd_connector);
-  return connector;
 }
 
 int SocketAcceptor::cclose(){

@@ -1,1 +1,7 @@
 * Agregar el mutex a WaitClient
+*Forma mas cheta de lanzar excepcion en SocketAceptador, pensar que lo mismo
+sirve para SocketConectador cuando quiero conectar;
+*2. Se recomienda el uso de contenedores STL siempre que sea posible.
+*uint32_t
+*codigo duplicado de getBuss()
+* const

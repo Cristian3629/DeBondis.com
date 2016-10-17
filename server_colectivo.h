@@ -1,18 +1,22 @@
-#ifndef COLECTIVO_H
-#define COLECTIVO_H
+#ifndef SERVERCOLECTIVO_H
+#define SERVERCOLECTIVO_H
 
-#include <string>
-#include <vector>
-
+#include "server_colectivo_recorrido.h"
+#include "server_date.h"
+#include "server_date.h"
 class Colectivo{
 private:
-  std::string linea;
-  std::vector<std::string> paradas;
-
+  ColectivoRecorrido& recorrido;
+  int timeLinux;
 public:
-  Colectivo(std::vector<std::string> v);
-  void print();
+  Colectivo(ColectivoRecorrido& recorridoColectivo, int timeLnx);
+  bool isBus(int linea);
+  int getLinea();
+  Date getDate();
+  int getTimeToStop(int parada);
+  int getTimeToStop(int first, int end);
+  void printTime();
   ~Colectivo();
 };
 
-#endif /* COLECTIVO_H */
+#endif /* SERVERCOLECTIVO_H */

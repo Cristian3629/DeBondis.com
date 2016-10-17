@@ -4,9 +4,10 @@
 #include <map>
 #include <vector>
 #include "server_socket_acceptor.h"
-#include "server_colectivo.h"
+#include "server_colectivo_recorrido.h"
 #include "server_time_stop.h"
 #include "server_thread.h"
+#include "server_colectivo.h"
 
 class WaitClient;
 class WaitCharacter;
@@ -18,21 +19,24 @@ private:
   WaitClient* waitClient;
   WaitCharacter* waitQ;
   //std::vector<AttendClient*> atendedores;
-  std::vector<Colectivo> colectivos;
+  std::vector<ColectivoRecorrido> recorridos;
   std::vector<TimeStop> paradas;
-  //std::vector<SocketConnector> connectors;
+  std::vector<Colectivo> colectivos;
   std::vector<std::string> parse(const char* linea);
-  void procesarColectivos(std::ifstream& coletivos);
+  void procesarRecorridos(std::ifstream& coletivos);
   void procesarParadas(std::ifstream& paradasFile);
   std::ifstream openFile(const char* name);
   void upLoadInformation(const char* nameFileColective, const char* nameFileParadas);
+  int getIndxRecordido(int number);
 
 public:
   Server();
   void ejecutar(int argc, char const *argv[]);
   SocketAcceptor& getAcceptor();
   void close();
-  void newClient();
+  void addBus(int number, int date);
+  std::vector<Colectivo*> getBussOfNumber(int linea);
+  std::vector<Colectivo*> getBuss();
   ~Server();
 };
 
