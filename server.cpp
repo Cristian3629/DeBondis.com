@@ -18,30 +18,22 @@ using std::string;
 using std::stringstream;
 using std::vector;
 using std::string;
+using std::mutex;
 
-/* Los creo que en heap porque solo puedo tener puntero a estos elemento*/
 Server::Server(){
-  //SocketAcceptor acceptor; /*no es necesario*/
-  WaitClient* waitClientAux = new WaitClient(*this);
-  waitClient = waitClientAux;
-  WaitCharacter* waitQAux = new WaitCharacter(*this);
-  waitQ = waitQAux;
+  waitClient = new WaitClient(*this);
+  waitQ = new WaitCharacter(*this);
+  mutex mtx;
 }
 
 Server::~Server(){
-  //std::cout << "Server destroy" << std::endl;
-  //std::cout << "Tengo " <<paradas.size()<<" paradas"<< std::endl;
-  //std::cout << "waitCliente join" << std::endl;
   waitClient->join();
-  //std::cout << "delete Q" << std::endl;
   delete(waitQ);
-  //std::cout << "Delete waitClient" << std::endl;
   delete(waitClient);
 
 }
 
 void Server::close(){
-  //std::cout << "Server close" << std::endl;
   waitClient->finish();
   acceptor.cclose();
 }
@@ -49,20 +41,23 @@ void Server::close(){
 int Server::getIndxRecordido(int number){
   size_t size = recorridos.size();
   for (size_t i = 0; i < size; i++) {
+    mtx.unlock();
     if (recorridos[i].isBus(number)){
       return i;
     }
+    mtx.unlock();
   }
   return -1;
 }
 
 void Server::addBus(int number, int date){
-  //std::cout << "addBus" << std::endl;
   int indx = getIndxRecordido(number);
   recorridos[indx].print();
   if (indx != -1){
     Colectivo colectivo(recorridos[indx],date);
+    mtx.lock();
     colectivos.push_back(colectivo);
+    mtx.unlock();
   }else{
     cout << "No se encuentra información respecto a este colectivo" << endl;
   }
@@ -88,7 +83,6 @@ vector<Colectivo*> Server::getBuss(){
 
 
 vector<string> Server::parse(const char* linea){
-  //std::cout << "Server::parse" << std::endl;
   string colectivo(linea);
   stringstream ss(colectivo);
   string token;
@@ -100,7 +94,6 @@ vector<string> Server::parse(const char* linea){
 }
 
 void Server::procesarParadas(ifstream& paradasFile){
-  //std::cout << "procesarParadas" << std::endl;
   char linea[128];
   while (!paradasFile.eof()) {
     paradasFile.getline(linea,128);
@@ -115,7 +108,6 @@ void Server::procesarParadas(ifstream& paradasFile){
 
 void Server::procesarRecorridos(ifstream& colectivosFile){
   char linea[128];
-  //std::cout << "Server::procesarRecorridos()" << std::endl;
   while (!colectivosFile.eof()){
     colectivosFile.getline(linea,128);
     if (strncmp(linea,"",1) != 0){
@@ -126,32 +118,23 @@ void Server::procesarRecorridos(ifstream& colectivosFile){
         //std::cout << "v size" <<v.size()<< std::endl;
         bool encontrado = false;
         for (size_t j = 0; j <paradas.size() && !encontrado; j++){
-          /*agrego los tiempos con respectivas paradas*/
-          //std::cout << "Buscando tiempo de:" <<stoi(v[i])<<"-"<<stoi(v[i+1])<< std::endl;
           if (paradas[j].isTimeOfStop(stoi(v[i]),stoi(v[i+1]))){
-            //std::cout << "add" << std::endl;
             encontrado = true;
             recorrido.addTimeStop(paradas[j]);
-            //recorrido.print();
           }
         }
       }
       recorridos.push_back(std::move(recorrido));
-      //recorridos.back().print();
     }
   }
 }
 
 
 ifstream Server::openFile(const char* name){
-  //std::cout << "Server::openFile()" << std::endl;
-  //std::cout << "nombre del archivo:" <<name<< std::endl;
   ifstream archivo(name);
   return archivo;
 }
 
-/* ./server port paradas.txt recorridos.txt */
-/*     0      1      2            3*/
 
 void Server::upLoadInformation(const char* nameFileColective, const char* nameFileParadas){
   ifstream paradasFile = openFile(nameFileParadas);
@@ -165,8 +148,9 @@ SocketAcceptor& Server::getAcceptor(){
   return acceptor;
 }
 
+/* ./server port paradas.txt recorridos.txt */
+/*     0      1      2            3*/
 void Server::ejecutar(int argc, char const *argv[]){
-  //std::cout << "I am server" << std::endl;
   acceptor.sbind(argv[1]);
   acceptor.slisten(10);
   upLoadInformation(argv[3],argv[2]);

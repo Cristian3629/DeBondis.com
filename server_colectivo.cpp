@@ -23,12 +23,10 @@ Date Colectivo::getDate(){
 }
 
 int Colectivo::getTimeToStop(int first, int end){
-  //std::cout << recorrido.getTimeToStop(end) <<"-"<<recorrido.getTimeToStop(first)<< std::endl;
   return recorrido.getTimeToStop(end) - recorrido.getTimeToStop(first);
 }
 
 
 int Colectivo::getTimeToStop(int parada){
-  //std::cout << "Colectivo::getTimeToStop" << std::endl;
   return recorrido.getTimeToStop(parada);
 }

@@ -66,7 +66,6 @@ int SocketConnector::creceive(void* buffer, int size){
   int aux = 0; // Guardaremos el valor devuelto por send() */
   int leido = 0; // Número de caracteres leídos hasta el momento
   //aux es la cantidad de bytes que envie
-  //longitud es la longitud del buffer
   while (leido < size){
     aux = recv(fd, (char*)buffer + leido,size-leido
     , MSG_NOSIGNAL);

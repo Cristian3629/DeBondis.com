@@ -13,12 +13,15 @@ public:
   void print() const;
   int getSeconds() const;
   void setSeconds(int seconds);
+  void decreaseMinute(int minute);
+  void incrementeMinute(int minute);
+  void addSeconds(int second);
   int getMinutes();
   int getHour();
   int getDay();
   int getMonth();
   int getYear();
-  Date operator-(const Date& otherDate) const;
+  int operator-(const Date& otherDate) const;
   ~Date();
 };
 

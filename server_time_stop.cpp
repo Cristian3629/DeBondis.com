@@ -29,7 +29,9 @@ bool TimeStop::isEnd(int end){
   //print();
   return segundaParada == end;
 }
-
+bool TimeStop::isStart(int first){
+  return primeraParada == first;
+}
 
 int TimeStop::getTime(){
   return time;

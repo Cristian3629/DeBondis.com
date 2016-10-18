@@ -14,6 +14,7 @@ public:
   TimeStop(std::vector<std::string> v);
   bool isTimeOfStop(int start,int end);
   bool isEnd(int end);
+  bool isStart(int first);
   int getTime();
   void print();
   ~TimeStop();

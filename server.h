@@ -3,6 +3,7 @@
 #include <fstream>
 #include <map>
 #include <vector>
+#include <mutex>
 #include "server_socket_acceptor.h"
 #include "server_colectivo_recorrido.h"
 #include "server_time_stop.h"
@@ -15,10 +16,10 @@ class AttendClient;
 
 class Server{
 private:
+  std::mutex mtx;
   SocketAcceptor acceptor;
   WaitClient* waitClient;
   WaitCharacter* waitQ;
-  //std::vector<AttendClient*> atendedores;
   std::vector<ColectivoRecorrido> recorridos;
   std::vector<TimeStop> paradas;
   std::vector<Colectivo> colectivos;

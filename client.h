@@ -6,7 +6,6 @@
 class Client{
 private:
   SocketConnector* connector;
-  std::map<std::string,int> mymap;
   int getSizeBuffer(int size);
   int getUnixTime(std::string date);
   void receiveAnswer(std::string& command);

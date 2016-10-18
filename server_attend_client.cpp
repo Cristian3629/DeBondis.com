@@ -14,6 +14,7 @@ using std::pair;
 /**/
 AttendClient::AttendClient(Server* serverRef,SocketConnector* connectorRef)
 :server(serverRef),connector(connectorRef),estate(true){
+  value = 0;
   std::cout << "Cliente conectado." << std::endl;
   mymap.insert(pair<string,int>("A",1));
   mymap.insert(pair<string,int>("F",2));
@@ -43,7 +44,8 @@ void AttendClient::ejecuteCommand(string& command,vector<int>& parameters){
 void AttendClient::sendError(){
   std::cout << "AttendClient::sendError()" << std::endl;
 }
-AttendClient::~AttendClient(){}
+AttendClient::~AttendClient(){
+}
 
 
 string AttendClient::getCommand(){
@@ -86,6 +88,12 @@ void AttendClient::run(){
   std::cout << "Cliente desconectado." << std::endl;
 }
 
+void AttendClient::join(){
+  if(thread.joinable()){
+    thread.join();
+  }
+}
+
 void AttendClient::ejecuteCommandA(vector<int>& parameters){
   //std::cout << "ejecuteCommandA" << std::endl;
   server->addBus(parameters[1],parameters[0]);
@@ -98,64 +106,111 @@ void AttendClient::ejecuteCommandA(vector<int>& parameters){
 // tiempo colectivo parada
 void AttendClient::ejecuteCommandF(vector<int>& parameters){
   //std::cout << "----ejecuteCommandF" << std::endl;
-  std::vector<Colectivo*> colectivos = server->getBussOfNumber(parameters[1]);
-  Colectivo* colectivo = colectivos[0];
-  int time = colectivo->getTimeToStop(parameters[2]) / 60;
-  Date dateQuery(parameters[0]);
-  Date const busDate = colectivo->getDate();
-  Date diff = dateQuery - busDate;
-  uint8_t answer = 0x02;
-  uint32_t seconds = time - diff.getMinutes();
-  connector->csend(&answer,sizeof(answer));
-  connector->csend(&seconds,sizeof(seconds));
-  //std::cout << "----El colectivo tarda " << time - diff.getMinutes() <<" para llegar a la parada "<<parameters[2]<< std::endl;
-}
-void AttendClient::ejecuteCommandL(vector<int>& parameters){
-  //std::cout << "----ejecuteCommandL" << std::endl;
-  std::vector<Colectivo*> colectivos = server->getBuss();
-  int pos = 0;
-  int lessTime = colectivos[pos]->getTimeToStop(parameters[1],parameters[2]);
-  for (size_t i = 1; i < colectivos.size(); i++){
-    Colectivo* colectivo = colectivos[i];
-    int timeBuss = colectivo->getTimeToStop(parameters[1],parameters[2]);
-    if (timeBuss < lessTime){
-      lessTime = timeBuss;
-      pos = i;
+    std::vector<Colectivo*> colectivos = server->getBussOfNumber(parameters[1]);
+    if (colectivos[0]->getTimeToStop(parameters[2])<0){
+      uint8_t answer = 0xff;
+      connector->csend(&answer,sizeof(answer));
+      //std::cout << "send error" << std::endl;
+    }
+    else{
+      //std::cout << "no error" << std::endl;
+      Date dateQuery(parameters[0]);
+      int diferencia = 600000;
+      //std::cout << "diferencia" <<diferencia<< std::endl;
+      for (size_t i = 0; i < colectivos.size(); i++) {
+        int time = colectivos[i]->getTimeToStop(parameters[2]) / 60;
+        Date busDate = colectivos[i]->getDate();
+        //busDate.print();
+        busDate.incrementeMinute(time);
+        //std::cout << "hora que llega el bondi" << std::endl;
+        //busDate.print();
+        int diferenciaAux = dateQuery - busDate;
+        if (diferenciaAux >= 0 && diferenciaAux < diferencia){
+          diferencia = diferenciaAux;
+        }
+        //std::cout << "diferenciaAux" <<diferenciaAux<< std::endl;
+      }
+      //std::cout << "send" << std::endl;
+      uint8_t answer = 0x02;
+      uint32_t seconds = diferencia/60;
+      connector->csend(&answer,sizeof(answer));
+      connector->csend(&seconds,sizeof(seconds));
     }
   }
-  uint8_t answer = 0x03;
-  connector->csend(&answer,sizeof(answer));
-  uint32_t linea = colectivos[pos]->getLinea();
-  uint32_t time = lessTime/60;
-  connector->csend(&linea,sizeof(linea));
-  connector->csend(&time,sizeof(time));
-  //std::cout << "----La línea"<< colectivos[pos] << "tardará" <<lessTime/60<<"minutos y 0 segundos en llegar a destino" << std::endl;
+
+void AttendClient::ejecuteCommandL(vector<int>& parameters){
+  //std::cout << "L" << std::endl;
+
+  std::vector<Colectivo*> colectivos = server->getBuss();
+  uint8_t answer;
+  if(colectivos.size()>0){
+    Date dataQuery(parameters[0]);
+    int pos = 0;
+    int diferenciaActual = 6000000;
+    for (size_t i = 1; i < colectivos.size(); i++){
+      Colectivo* colectivo = colectivos[i];
+      int difParadaBus = colectivo->getTimeToStop(parameters[1],parameters[2]);
+      //std::cout << "diferenciaParadaBus:" <<difParadaBus<< std::endl;
+      // int timeBuss1 = colectivo->getTimeToStop(parameters[1]);
+      // Date dateBus = colectivo->getDate();
+      // int minute = timeBuss1/60;
+      // dateBus.incrementeMinute(minute);
+      // dateBus.addSeconds(timeBuss1 - minute*60);
+      // int tiempoParaLlegar = dataQuery - dateBus;
+      // std::cout << "tiempoParaLlegar:" <<tiempoParaLlegar<<"linea"<<colectivo->getLinea()<< std::endl;
+      if (0 <= difParadaBus){
+        if(difParadaBus < diferenciaActual){
+          //std::cout << "swap" << std::endl;
+          diferenciaActual = difParadaBus;
+          pos = i;
+        }
+      }
+    }
+    answer = 0x03;
+    connector->csend(&answer,sizeof(answer));
+    uint32_t linea = colectivos[pos]->getLinea();
+    //std::cout << "diferenciaParada:" <<diferenciaActual/60<< std::endl;
+    uint32_t segundos = diferenciaActual;
+    connector->csend(&linea,sizeof(linea));
+    connector->csend(&segundos,sizeof(segundos));
+  }else{
+    answer = 0xff;
+    connector->csend(&answer,sizeof(answer));
+  }
 }
 
 
 void AttendClient::ejecuteCommandR(std::vector<int>& parameters){
   //std::cout << "ejecuteCommandR" << std::endl;
   std::vector<Colectivo*> colectivos = server->getBuss();
-  Date dateQuery(parameters[0]);
+  Date dataQuery(parameters[0]);
   int pos = 0;
-  Date dateBuss = colectivos[pos]->getDate();
-  Date diff = dateQuery - dateBuss;
-  int time = colectivos[pos]->getTimeToStop(parameters[1])/ 60;
-  int lessTime = colectivos[pos]->getTimeToStop(parameters[1],parameters[2])/60 +  time - diff.getMinutes();
-  for (size_t i = 0; i < colectivos.size(); i++) {
-    dateBuss = colectivos[i]->getDate();
-    diff = dateQuery - dateBuss;
-    time = colectivos[i]->getTimeToStop(parameters[1])/ 60;
-    int timeBuss = colectivos[pos]->getTimeToStop(parameters[1],parameters[2])/60 +  time - diff.getMinutes();
-    if (timeBuss < lessTime){
-      lessTime = timeBuss;
-      pos = i;
+  int sumaActual = 6000000;
+  int tiempoParaLlegarActual = 0;
+  for (size_t i = 1; i < colectivos.size(); i++){
+    Colectivo* colectivo = colectivos[i];
+    int difParadaBus = colectivo->getTimeToStop(parameters[1],parameters[2]);
+    //std::cout << "diferenciaParadaBus:" <<difParadaBus<< std::endl;
+    int timeBuss1 = colectivo->getTimeToStop(parameters[1]);
+    Date dateBus = colectivo->getDate();
+    int minute = timeBuss1/60;
+    dateBus.incrementeMinute(minute);
+    dateBus.addSeconds(timeBuss1 - minute*60);
+    int tiempoParaLlegar = dataQuery - dateBus;
+    //std::cout << "tiempoParaLlegar:" <<tiempoParaLlegar<<"linea "<<colectivo->getLinea()<< std::endl;
+    if (0<tiempoParaLlegar &&  0 <= difParadaBus){
+      if(tiempoParaLlegar + difParadaBus <= sumaActual){
+        //std::cout << "swap" << std::endl;
+        sumaActual = tiempoParaLlegar + difParadaBus;
+        tiempoParaLlegarActual = difParadaBus + tiempoParaLlegar;
+        pos = i;
+      }
     }
   }
   uint8_t answer = 0x04;
   connector->csend(&answer,sizeof(answer));
   uint32_t parameter = colectivos[pos]->getLinea();
-  uint32_t parameter1 = lessTime/60;
+  uint32_t parameter1 = tiempoParaLlegarActual;
   connector->csend(&parameter,sizeof(parameter));
   connector->csend(&parameter1,sizeof(parameter1));
 }
@@ -169,6 +224,19 @@ AttendClient::AttendClient(AttendClient&& other){
   other.server = nullptr;
   other.connector = nullptr;
   other.estate = false;
+  other.value = -1; /*defino que quedó en un estado no valido*/
+}
+AttendClient& AttendClient::operator=(AttendClient&& other){
+  thread = std::move(other.thread);
+  server = other.server;
+  connector = other.connector;
+  mymap = std::move(other.mymap);
+  estate = other.estate;
+  other.server = nullptr;
+  other.connector = nullptr;
+  other.estate = false;
+  other.value = -1; /*defino que quedó en un estado no valido*/
+  return (*this);
 }
 
 

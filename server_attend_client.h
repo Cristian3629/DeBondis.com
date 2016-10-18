@@ -12,6 +12,7 @@ private:
   Server* server;
   SocketConnector* connector;
   bool estate; /*Define si el cliente que está atendiendo está conectado*/
+  int value = 0;
   std::map<std::string,int> mymap;
   std::string getCommand();
   std::vector<int> getParameters(std::string command);
@@ -26,6 +27,8 @@ private:
 public:
   AttendClient(Server* serverRef,SocketConnector* connectorRef);
   AttendClient(AttendClient&& other);
+  AttendClient& operator=(AttendClient&& other);
+  void join();
   bool isActive();
   virtual void run();
   void operator()();

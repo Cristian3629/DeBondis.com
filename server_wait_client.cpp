@@ -19,32 +19,36 @@ WaitClient::~WaitClient(){
 }
 
 void WaitClient::run(){
-  //std::cout << "----WaitClient::run()" << std::endl;
   SocketAcceptor& acceptor = server.getAcceptor();
   while(estateActive){
     try{
       SocketConnector connector = acceptor.saccept();
       connectors.push_back(std::move(connector));
-      //std::cout << "----newAttendClient" << std::endl;
       AttendClient attendClient(&server,&connectors.back());
       attends.push_back(std::move(attendClient));
       attends.back().start();
       checkAttends();
     }
     catch(int n){
-        //std::cout << "Socket closed" << std::endl;
         finish();
     }
   }
-  //std::cout << "----WaitClient exit" << std::endl;
 }
-/*Este metodo se encarga de chequear el estado de cada attend*/
+/*Este metodo se encarga de chequear el estado de cada attend
+Si el hilo ya no se encuentra activo, lo joineo y lo saco del vector, el hilo
+que quedo dentro attends queda no joinable que se va a liberar en el destructor
+*/
 void WaitClient::checkAttends(){
-  //std::cout << "Chequenado los distintos atendedores" << std::endl;
+  for (size_t i = 0; i < attends.size(); i++){
+    if (!attends[i].isActive()){
+      AttendClient attend = std::move(attends[i]);
+      attend.join();
+    }
+  }
 }
 
+/*El WaitCliente debe de esperar clientes*/
 void WaitClient::finish(){
-  //std::cout << "Wait Client finish" << std::endl;
   estateActive = false;
 }
 
