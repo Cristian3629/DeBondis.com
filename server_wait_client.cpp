@@ -14,22 +14,21 @@ WaitClient::WaitClient(Server& serverRef):server(serverRef){
 WaitClient::~WaitClient(){
   size_t size = attends.size();
   for (size_t i = 0; i < size; i++){
-    attends[i]->join();
-    delete(attends[i]);
+    attends[i].join();
   }
 }
 
 void WaitClient::run(){
-  std::cout << "WaitClient::run()" << std::endl;
+  std::cout << "----WaitClient::run()" << std::endl;
   SocketAcceptor& acceptor = server.getAcceptor();
   while(estateActive){
     try{
       SocketConnector connector = acceptor.saccept();
       connectors.push_back(std::move(connector));
-      std::cout << "newAttendClient" << std::endl;
-      AttendClient* attendClient = new AttendClient(server,connectors.back());
-      attends.push_back(attendClient);
-      attends.back()->start();
+      std::cout << "----newAttendClient" << std::endl;
+      AttendClient attendClient(&server,&connectors.back());
+      attends.push_back(std::move(attendClient));
+      attends.back().start();
       checkAttends();
     }
     catch(int n){
@@ -37,7 +36,7 @@ void WaitClient::run(){
         finish();
     }
   }
-  std::cout << "WaitClient exit" << std::endl;
+  std::cout << "----WaitClient exit" << std::endl;
 }
 /*Este metodo se encarga de chequear el estado de cada attend*/
 void WaitClient::checkAttends(){

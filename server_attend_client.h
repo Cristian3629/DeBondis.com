@@ -9,8 +9,8 @@ class Server;
 
 class AttendClient:public Thread{
 private:
-  Server& server;
-  SocketConnector& connector;
+  Server* server;
+  SocketConnector* connector;
   bool estate; /*Define si el cliente que está atendiendo está conectado*/
   std::map<std::string,int> mymap;
   std::string getCommand();
@@ -24,7 +24,8 @@ private:
   void ejecuteCommandR(std::vector<int>& parameters);
   void ejecuteCommandL(std::vector<int>& parameters);
 public:
-  AttendClient(Server& serverRef,SocketConnector& connectorRef);
+  AttendClient(Server* serverRef,SocketConnector* connectorRef);
+  AttendClient(AttendClient&& other);
   bool isActive();
   virtual void run();
   void operator()();

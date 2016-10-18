@@ -6,15 +6,15 @@
 
 
 class Thread{
-private:
-	std::thread thread;
 protected:
+	std::thread thread;
+private:
 	Thread(const Thread&) = delete;
 	Thread& operator=(const Thread&) = delete;
-	Thread(Thread&& other);
-	Thread& operator=(Thread&& other);
 public:
 	Thread();
+	Thread(Thread&& other);
+	Thread& operator=(Thread&& other);
 	void start();
 	void join();
 	virtual ~Thread();

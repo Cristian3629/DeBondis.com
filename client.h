@@ -1,18 +1,23 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 #include "common_socket_connector.h"
-#include "common_translator_command.h"
+#include <map>
 
 class Client{
 private:
   SocketConnector* connector;
-  TranslatorCommand translator;
+  std::map<std::string,int> mymap;
   int getSizeBuffer(int size);
   int getUnixTime(std::string date);
+  void receiveAnswer(std::string& command);
+  void receiveAnswerA();
+  void receiveAnswerF();
+  void receiveAnswerR();
+  void receiveAnswerL();
 public:
   Client();
   void getCommand();
-  void ejecuteCommand(std::string command);
+  void ejecuteCommand(std::string& command);
   void ejecutar(int argc, char const *argv[]);
   ~Client();
 };

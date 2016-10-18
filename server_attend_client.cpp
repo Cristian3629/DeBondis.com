@@ -4,6 +4,7 @@
 #include "server.h"
 #include <string.h>
 #include <map>
+
 using std::cout;
 using std::endl;
 using std::string;
@@ -11,7 +12,7 @@ using std::vector;
 using std::pair;
 
 /**/
-AttendClient::AttendClient(Server& serverRef,SocketConnector& connectorRef)
+AttendClient::AttendClient(Server* serverRef,SocketConnector* connectorRef)
 :server(serverRef),connector(connectorRef),estate(true){
   mymap.insert(pair<string,int>("A",1));
   mymap.insert(pair<string,int>("F",2));
@@ -20,7 +21,7 @@ AttendClient::AttendClient(Server& serverRef,SocketConnector& connectorRef)
 }
 
 void AttendClient::ejecuteCommand(string& command,vector<int>& parameters){
-  std::cout << "AttendClient::ejecuteCommand" << std::endl;
+  //std::cout << "AttendClient::ejecuteCommand" << std::endl;
   int operation = mymap[command];
   switch (operation){
     case 1:
@@ -45,9 +46,9 @@ AttendClient::~AttendClient(){}
 
 
 string AttendClient::getCommand(){
-  std::cout << "AttendClient::getCommand()" << std::endl;
+  //std::cout << "AttendClient::getCommand()" << std::endl;
   char command[2] = " ";
-  connector.creceive(command,1);
+  connector->creceive(command,1);
   string mycommand(command);
   /*Recibir el'-'es aviso de que no existen mas consultas por parte del cliente*/
   if (strncmp(command,"-",1) == 0){
@@ -58,12 +59,13 @@ string AttendClient::getCommand(){
 
 vector<int> AttendClient::getParameters(string command){
   int buffer;
+  //std::cout << "---AttendClient::getParameters:" <<command<< std::endl;
   vector<int> parameters;
   int size = getNumberOfBlocks(command);
-  std::cout << "la cantidad de bloques" <<size<< std::endl;
+  //std::cout << "la cantidad de bloques" <<size<< std::endl;
   for (int i = 0; i < size; i++){
-    connector.creceive(&buffer,sizeof(buffer));
-    std::cout << "int receive:" <<buffer<< std::endl;
+    connector->creceive(&buffer,sizeof(buffer));
+    //std::cout << "int receive:" <<buffer<< std::endl;
     parameters.push_back(buffer);
   }
   return parameters;
@@ -71,7 +73,7 @@ vector<int> AttendClient::getParameters(string command){
 
 
 void AttendClient::run(){
-  std::cout << "AttendClient::run()" << std::endl;
+  //std::cout << "AttendClient::run()" << std::endl;
   string command = getCommand();
   while(estate){
     vector<int> parameters = getParameters(command);
@@ -81,25 +83,32 @@ void AttendClient::run(){
 }
 
 void AttendClient::ejecuteCommandA(vector<int>& parameters){
-  std::cout << "ejecuteCommandA" << std::endl;
-  server.addBus(parameters[1],parameters[0]);
-  cout << "Un colectivo de la línea "<< parameters[1] <<" ha sido agregado." <<endl;
+  //std::cout << "ejecuteCommandA" << std::endl;
+  server->addBus(parameters[1],parameters[0]);
+  uint32_t numberBus = parameters[1];
+  uint8_t answer = 0x00;
+  connector->csend(&answer,sizeof(answer));
+  connector->csend(&numberBus,sizeof(numberBus));
 }
 
 // tiempo colectivo parada
 void AttendClient::ejecuteCommandF(vector<int>& parameters){
-  std::cout << "ejecuteCommandF" << std::endl;
-  std::vector<Colectivo*> colectivos = server.getBussOfNumber(parameters[1]);
+  //std::cout << "----ejecuteCommandF" << std::endl;
+  std::vector<Colectivo*> colectivos = server->getBussOfNumber(parameters[1]);
   Colectivo* colectivo = colectivos[0];
   int time = colectivo->getTimeToStop(parameters[2]) / 60;
   Date dateQuery(parameters[0]);
   Date const busDate = colectivo->getDate();
   Date diff = dateQuery - busDate;
-  std::cout << "El colectivo tarda " << time - diff.getMinutes() <<" para llegar a la parada "<<parameters[2]<< std::endl;
+  uint8_t answer = 0x02;
+  uint32_t seconds = time - diff.getMinutes();
+  connector->csend(&answer,sizeof(answer));
+  connector->csend(&seconds,sizeof(seconds));
+  //std::cout << "----El colectivo tarda " << time - diff.getMinutes() <<" para llegar a la parada "<<parameters[2]<< std::endl;
 }
 void AttendClient::ejecuteCommandL(vector<int>& parameters){
-  std::cout << "ejecuteCommandL" << std::endl;
-  std::vector<Colectivo*> colectivos = server.getBuss();
+  //std::cout << "----ejecuteCommandL" << std::endl;
+  std::vector<Colectivo*> colectivos = server->getBuss();
   int pos = 0;
   int lessTime = colectivos[pos]->getTimeToStop(parameters[1],parameters[2]);
   for (size_t i = 1; i < colectivos.size(); i++){
@@ -110,13 +119,19 @@ void AttendClient::ejecuteCommandL(vector<int>& parameters){
       pos = i;
     }
   }
-  std::cout << "La línea"<< colectivos[pos] << "tardará" <<lessTime/60<<"minutos y 0 segundos en llegar a destino" << std::endl;
+  uint8_t answer = 0x03;
+  connector->csend(&answer,sizeof(answer));
+  uint32_t linea = colectivos[pos]->getLinea();
+  uint32_t time = lessTime/60;
+  connector->csend(&linea,sizeof(linea));
+  connector->csend(&time,sizeof(time));
+  //std::cout << "----La línea"<< colectivos[pos] << "tardará" <<lessTime/60<<"minutos y 0 segundos en llegar a destino" << std::endl;
 }
 
 
 void AttendClient::ejecuteCommandR(std::vector<int>& parameters){
-  std::cout << "ejecuteCommandR" << std::endl;
-  std::vector<Colectivo*> colectivos = server.getBuss();
+  //std::cout << "ejecuteCommandR" << std::endl;
+  std::vector<Colectivo*> colectivos = server->getBuss();
   Date dateQuery(parameters[0]);
   int pos = 0;
   Date dateBuss = colectivos[pos]->getDate();
@@ -133,12 +148,28 @@ void AttendClient::ejecuteCommandR(std::vector<int>& parameters){
       pos = i;
     }
   }
-  std::cout << "La línea"<< colectivos[pos]->getLinea() << "tardará" <<lessTime<<"minutos y 0 segundos en llegar a destino" << std::endl;
-
+  uint8_t answer = 0x04;
+  connector->csend(&answer,sizeof(answer));
+  uint32_t parameter = colectivos[pos]->getLinea();
+  uint32_t parameter1 = lessTime/60;
+  connector->csend(&parameter,sizeof(parameter));
+  connector->csend(&parameter1,sizeof(parameter1));
 }
 
+AttendClient::AttendClient(AttendClient&& other){
+  thread = std::move(other.thread);
+  server = other.server;
+  connector = other.connector;
+  mymap = std::move(other.mymap);
+  estate = other.estate;
+  other.server = nullptr;
+  other.connector = nullptr;
+  other.estate = false;
+}
+
+
 int AttendClient::getNumberOfBlocks(string command){
-  std::cout << "getNumberOfBlocks():" <<command<< std::endl;
+  //std::cout << "getNumberOfBlocks():" <<command<< std::endl;
   if (command == "A"){
     return 2;
   }
