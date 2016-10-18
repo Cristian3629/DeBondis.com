@@ -29,19 +29,19 @@ Server::Server(){
 }
 
 Server::~Server(){
-  std::cout << "Server destroy" << std::endl;
+  //std::cout << "Server destroy" << std::endl;
   //std::cout << "Tengo " <<paradas.size()<<" paradas"<< std::endl;
-  std::cout << "waitCliente join" << std::endl;
+  //std::cout << "waitCliente join" << std::endl;
   waitClient->join();
-  std::cout << "delete Q" << std::endl;
+  //std::cout << "delete Q" << std::endl;
   delete(waitQ);
-  std::cout << "Delete waitClient" << std::endl;
+  //std::cout << "Delete waitClient" << std::endl;
   delete(waitClient);
 
 }
 
 void Server::close(){
-  std::cout << "Server close" << std::endl;
+  //std::cout << "Server close" << std::endl;
   waitClient->finish();
   acceptor.cclose();
 }
@@ -57,7 +57,7 @@ int Server::getIndxRecordido(int number){
 }
 
 void Server::addBus(int number, int date){
-  std::cout << "addBus" << std::endl;
+  //std::cout << "addBus" << std::endl;
   int indx = getIndxRecordido(number);
   recorridos[indx].print();
   if (indx != -1){
@@ -100,7 +100,7 @@ vector<string> Server::parse(const char* linea){
 }
 
 void Server::procesarParadas(ifstream& paradasFile){
-  std::cout << "procesarParadas" << std::endl;
+  //std::cout << "procesarParadas" << std::endl;
   char linea[128];
   while (!paradasFile.eof()) {
     paradasFile.getline(linea,128);
@@ -115,7 +115,7 @@ void Server::procesarParadas(ifstream& paradasFile){
 
 void Server::procesarRecorridos(ifstream& colectivosFile){
   char linea[128];
-  std::cout << "Server::procesarRecorridos()" << std::endl;
+  //std::cout << "Server::procesarRecorridos()" << std::endl;
   while (!colectivosFile.eof()){
     colectivosFile.getline(linea,128);
     if (strncmp(linea,"",1) != 0){
@@ -123,21 +123,21 @@ void Server::procesarRecorridos(ifstream& colectivosFile){
       /*v[0] es la linea del colectivo*/
       ColectivoRecorrido recorrido(stoi(v[0]));
       for (size_t i = 1; i < v.size()-1; i++) {
-        std::cout << "v size" <<v.size()<< std::endl;
+        //std::cout << "v size" <<v.size()<< std::endl;
         bool encontrado = false;
         for (size_t j = 0; j <paradas.size() && !encontrado; j++){
           /*agrego los tiempos con respectivas paradas*/
-          std::cout << "Buscando tiempo de:" <<stoi(v[i])<<"-"<<stoi(v[i+1])<< std::endl;
+          //std::cout << "Buscando tiempo de:" <<stoi(v[i])<<"-"<<stoi(v[i+1])<< std::endl;
           if (paradas[j].isTimeOfStop(stoi(v[i]),stoi(v[i+1]))){
-            std::cout << "add" << std::endl;
+            //std::cout << "add" << std::endl;
             encontrado = true;
             recorrido.addTimeStop(paradas[j]);
-            recorrido.print();
+            //recorrido.print();
           }
         }
       }
       recorridos.push_back(std::move(recorrido));
-      recorridos.back().print();
+      //recorridos.back().print();
     }
   }
 }
@@ -166,7 +166,7 @@ SocketAcceptor& Server::getAcceptor(){
 }
 
 void Server::ejecutar(int argc, char const *argv[]){
-  std::cout << "I am server" << std::endl;
+  //std::cout << "I am server" << std::endl;
   acceptor.sbind(argv[1]);
   acceptor.slisten(10);
   upLoadInformation(argv[3],argv[2]);

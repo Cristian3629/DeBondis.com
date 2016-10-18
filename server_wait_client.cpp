@@ -19,32 +19,32 @@ WaitClient::~WaitClient(){
 }
 
 void WaitClient::run(){
-  std::cout << "----WaitClient::run()" << std::endl;
+  //std::cout << "----WaitClient::run()" << std::endl;
   SocketAcceptor& acceptor = server.getAcceptor();
   while(estateActive){
     try{
       SocketConnector connector = acceptor.saccept();
       connectors.push_back(std::move(connector));
-      std::cout << "----newAttendClient" << std::endl;
+      //std::cout << "----newAttendClient" << std::endl;
       AttendClient attendClient(&server,&connectors.back());
       attends.push_back(std::move(attendClient));
       attends.back().start();
       checkAttends();
     }
     catch(int n){
-        std::cout << "Socket closed" << std::endl;
+        //std::cout << "Socket closed" << std::endl;
         finish();
     }
   }
-  std::cout << "----WaitClient exit" << std::endl;
+  //std::cout << "----WaitClient exit" << std::endl;
 }
 /*Este metodo se encarga de chequear el estado de cada attend*/
 void WaitClient::checkAttends(){
-  std::cout << "Chequenado los distintos atendedores" << std::endl;
+  //std::cout << "Chequenado los distintos atendedores" << std::endl;
 }
 
 void WaitClient::finish(){
-  std::cout << "Wait Client finish" << std::endl;
+  //std::cout << "Wait Client finish" << std::endl;
   estateActive = false;
 }
 

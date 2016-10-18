@@ -53,7 +53,7 @@ Date Date::operator-(const Date& other) const{
 }
 
 void Date::print() const{
-  std::cout << "Date::print" << std::endl;
+  //std::cout << "Date::print" << std::endl;
   char buf[80];
   strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &ts);
   printf("%s\n", buf);

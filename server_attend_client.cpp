@@ -14,6 +14,7 @@ using std::pair;
 /**/
 AttendClient::AttendClient(Server* serverRef,SocketConnector* connectorRef)
 :server(serverRef),connector(connectorRef),estate(true){
+  std::cout << "Cliente conectado." << std::endl;
   mymap.insert(pair<string,int>("A",1));
   mymap.insert(pair<string,int>("F",2));
   mymap.insert(pair<string,int>("R",3));
@@ -53,6 +54,8 @@ string AttendClient::getCommand(){
   /*Recibir el'-'es aviso de que no existen mas consultas por parte del cliente*/
   if (strncmp(command,"-",1) == 0){
     estate = false;
+  }else{
+    std::cout << "Comando "<<command<<" recibido." << std::endl;
   }
   return mycommand;
 }
@@ -80,6 +83,7 @@ void AttendClient::run(){
     ejecuteCommand(command,parameters);
     command = getCommand();
   }
+  std::cout << "Cliente desconectado." << std::endl;
 }
 
 void AttendClient::ejecuteCommandA(vector<int>& parameters){

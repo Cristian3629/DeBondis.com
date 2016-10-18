@@ -13,7 +13,7 @@
 using std::string;
 //creo que el socket con el cual se comunica el programa
 SocketAcceptor::SocketAcceptor(){
-  std::cout << "Create SocketAcceptor()" << std::endl;
+  //std::cout << "Create SocketAcceptor()" << std::endl;
   int aux = socket(AF_INET,SOCK_STREAM,0);
   if (aux == -1) {
     std::cout << "Error in create socket acceptor" << std::endl;
@@ -23,29 +23,29 @@ SocketAcceptor::SocketAcceptor(){
 }
 
 SocketAcceptor::~SocketAcceptor(){
-  std::cout << "SocketAcceptor destroy" << std::endl;
+  //std::cout << "SocketAcceptor destroy" << std::endl;
   shutdown(fd,SHUT_RDWR);
   close(fd);
 }
 
 int SocketAcceptor::sbind(string port){
-    std::cout << "SocketAcceptor::bind()" <<port<< std::endl;
+    //std::cout << "SocketAcceptor::bind()" <<port<< std::endl;
     struct sockaddr_in address;
   	address.sin_addr.s_addr = INADDR_ANY;
   	address.sin_port = (unsigned long)stoi(port);
-    std::cout << "address.sin_port:" <<address.sin_port<< std::endl;
+    //std::cout << "address.sin_port:" <<address.sin_port<< std::endl;
   	address.sin_family = AF_INET;
   	int yes=1;
   	setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int));
   	int aux = bind(fd,(struct sockaddr *)&address,sizeof(address));
-    std::cout << "aux:" <<aux<< std::endl;
+    //std::cout << "aux:" <<aux<< std::endl;
     return aux;
 }
 
 int SocketAcceptor::slisten(int cant){
-  std::cout << "SocketAcceptor::listen()" << std::endl;
+  //std::cout << "SocketAcceptor::listen()" << std::endl;
   if(listen(this->fd,cant) == -1){
-    std::cout << "Error listen" << std::endl;
+    //std::cout << "Error listen" << std::endl;
     return 1;
   }
   return 0;
@@ -53,10 +53,10 @@ int SocketAcceptor::slisten(int cant){
 
 
 SocketConnector SocketAcceptor::saccept(){
-  std::cout << "SocketAcceptor::acept()" << std::endl;
+  //std::cout << "SocketAcceptor::acept()" << std::endl;
   int fd_connector = accept(fd,NULL,NULL);
   if(fd_connector == -1){
-    std::cout << "SocketAcceptor::Error accept" << std::endl;
+    //std::cout << "SocketAcceptor::Error accept" << std::endl;
     throw 1;
   }else{
     SocketConnector connector(fd_connector);
