@@ -17,7 +17,7 @@ using std::pair;
 /**/
 AttendClient::AttendClient(Server* serverRef,SocketConnector connector)
 :server(serverRef),state(true){
-  myConnector = std::move(connector);
+  this->myConnector = std::move(connector);
   std::cerr << "Cliente conectado." << std::endl;
   mymap.insert(pair<string,int>("A",1));
   mymap.insert(pair<string,int>("F",2));
@@ -188,21 +188,21 @@ void AttendClient::ejecuteCommandR(std::vector<int>& parameters){
 
 AttendClient::AttendClient(AttendClient&& other){
   std::cout << "move constructor attendClient" << std::endl;
-  thread = std::move(other.thread);
-  server = other.server;
-  myConnector = std::move(other.myConnector);
-  mymap = std::move(other.mymap);
-  state = other.state;
+  this->thread = std::move(other.thread);
+  this->server = other.server;
+  this->myConnector = std::move(other.myConnector);
+  this->mymap = std::move(other.mymap);
+  this->state = other.state;
   other.server = nullptr;
 }
 
 AttendClient& AttendClient::operator=(AttendClient&& other){
   std::cout << "move assigment attendClient" << std::endl;
-  thread = std::move(other.thread);
-  server = other.server;
-  myConnector = std::move(other.myConnector);
-  mymap = std::move(other.mymap);
-  state = other.state;
+  this->thread = std::move(other.thread);
+  this->server = other.server;
+  this->myConnector = std::move(other.myConnector);
+  this->mymap = std::move(other.mymap);
+  this->state = other.state;
   other.server = nullptr;
   //other.state = false;
   return (*this);
