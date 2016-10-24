@@ -3,7 +3,8 @@
 
 #include <set>
 #include "common_socket_connector.h"
-#include "server_attend_client.h"
+#include "server_wrapper.h"
+#include <vector>
 
 class Server;
 
@@ -12,8 +13,8 @@ class WaitClient:public Thread{
 private:
   Server& server;
   bool estateActive;
-  std::vector<AttendClient> attends;
-  void checkAttends();
+  std::vector<Wrapper> wrappers;
+  void checkThreads();
 public:
   explicit WaitClient(Server& serverRef);
   void run();

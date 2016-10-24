@@ -35,7 +35,6 @@ SocketConnector::SocketConnector(){
 
 
 int SocketConnector::csend(void *buffer,int size){
-  //std::cout << "SocketConnector::send:" <<fd<< std::endl;
 	int aux = 0; // Guardaremos el valor devuelto por send() */
 	int leido = 0; // Número de caracteres leídos hasta el momento
 	//aux es la cantidad de bytes que envie
@@ -57,7 +56,6 @@ int SocketConnector::csend(void *buffer,int size){
 
 
 int SocketConnector::creceive(void* buffer, int size){
-  //std::cout << "SocketConnector::receive:" <<fd<< std::endl;
   int aux = 0; // Guardaremos el valor devuelto por send() */
   int leido = 0; // Número de caracteres leídos hasta el momento
   //aux es la cantidad de bytes que envie
@@ -80,14 +78,12 @@ int SocketConnector::creceive(void* buffer, int size){
 
 
 int SocketConnector::cclose(){
-  //std::cout << "SocketConnector::cclose" << std::endl;
   shutdown(fd,SHUT_RDWR);
   close(fd);
   return 0;
 }
 
 int SocketConnector::cconnect(const char* ip, int port){
-  //std::cout << "SocketConnector::cconnect()" << std::endl;
   struct sockaddr_in addr;
 	addr.sin_port = (unsigned long)port;
 	inet_pton(AF_INET, ip , &(addr.sin_addr));
@@ -97,25 +93,18 @@ int SocketConnector::cconnect(const char* ip, int port){
 }
 
 SocketConnector::SocketConnector(SocketConnector&& other){
-  //std::cout << "SocketConnector move constructor" << std::endl;
-  //std::cout << "dir de other:"<< other.fd<< std::endl;
 	this->fd = std::move(other.fd);
-  //std::cout << "this->fd:" << this->fd<< std::endl;
   other.fd = -1;
 }
 
 
 SocketConnector& SocketConnector::operator=(SocketConnector&& other) {
-  //std::cout << "SocketConnector assigment constructor" << std::endl;
-  //std::cout << "dir de other:"<< other.fd<< std::endl;
 	this->fd = std::move(other.fd);
-  //std::cout << "this->fd:" << this->fd<< std::endl;
   other.fd = -1;
 	return *this;
 }
 
 SocketConnector::~SocketConnector(){
-  //std::cout << "SocketConnector::destroy:" <<fd<< std::endl;
   if (fd != -1){
     shutdown(fd,SHUT_RDWR);
     close(fd);

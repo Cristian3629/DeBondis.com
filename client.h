@@ -6,7 +6,7 @@
 
 class Client{
 private:
-  SocketConnector* connector;
+  SocketConnector connector;
   int getSizeBuffer(int size);
   int getUnixTime(std::string date);
   void receiveAnswer(std::string& command);

@@ -11,8 +11,8 @@ class Server;
 
 class EjecuteCommandL: public EjecuteCommand{
 public:
-  EjecuteCommandL(std::vector<int>& parameters,Server* serverPtr,SocketConnector&
-  connectorRef);
+  EjecuteCommandL(std::vector<int>& parameters,Server* serverPtr,
+    SocketConnector& connectorRef);
   void operator()();
   ~EjecuteCommandL();
 };

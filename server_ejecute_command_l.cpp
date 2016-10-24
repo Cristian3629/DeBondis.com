@@ -2,30 +2,37 @@
 #include "server_ejecute_command.h"
 #include "server_date.h"
 #include "server.h"
-#include <iostream> //cout
+#include <vector>
 
-EjecuteCommandL::EjecuteCommandL(std::vector<int>& parameters, Server* serverPtr,SocketConnector& connectorRef):EjecuteCommand(parameters,serverPtr,0x02,connectorRef){}
+EjecuteCommandL::EjecuteCommandL(std::vector<int>& parameters, Server* serverPtr
+  ,SocketConnector& connectorRef):EjecuteCommand(parameters,serverPtr,0x03,
+    connectorRef){}
 
 void EjecuteCommandL::operator()(){
-  std::vector<Colectivo*> colectivos = server->getBussOfNumber(myParameters[1]);
-  if (colectivos[0]->getTimeToStop(myParameters[2])<0){
-    answer = 0xff;
-    connector.csend(&answer,sizeof(answer));
-  }else{
-    Date dateQuery(myParameters[0]);
-    int diferencia = 600000;
-    for (size_t i = 0; i < colectivos.size(); i++) {
-      int time = colectivos[i]->getTimeToStop(myParameters[2]) / 60;
-      Date busDate = colectivos[i]->getDate();
-      busDate.incrementeMinute(time);
-      int diferenciaAux = dateQuery - busDate;
-      if (diferenciaAux >= 0 && diferenciaAux < diferencia){
-        diferencia = diferenciaAux;
+  std::vector<Colectivo*> colectivos = server->getBuss();
+  if (colectivos.size()>0){
+    Date dataQuery(myParameters[0]);
+    int pos = 0;
+    int diferenciaActual = 6000000;
+    for (size_t i = 0; i < colectivos.size(); i++){
+      Colectivo* colectivo = colectivos[i];
+      int difParadaBus = colectivo->getTimeToStop(myParameters[1],
+        myParameters[2]);
+      /*Si la diferencia es 0 es porque el colectivo no pasa por esas paradas*/
+      if (0 < difParadaBus){
+        if (difParadaBus < diferenciaActual){
+          diferenciaActual = difParadaBus;
+          pos = i;
+        }
       }
     }
-    uint32_t seconds = diferencia/60;
     connector.csend(&answer,sizeof(answer));
-    connector.csend(&seconds,sizeof(seconds));
+    uint32_t linea = colectivos[pos]->getLinea();
+    uint32_t segundos = diferenciaActual;
+    connector.csend(&linea,sizeof(linea));
+    connector.csend(&segundos,sizeof(segundos));
+  }else{
+    sendError();
   }
 }
 

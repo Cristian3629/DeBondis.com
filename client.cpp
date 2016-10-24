@@ -15,13 +15,14 @@ using std::stringstream;
 using std::vector;
 
 Client::Client(){
-  connector = new SocketConnector;
 }
-Client::~Client(){}
+
+Client::~Client(){
+}
 
 void Client::receiveAnswer(string& command){
   uint8_t answer;
-  connector->creceive(&answer,sizeof(answer));
+  connector.creceive(&answer,sizeof(answer));
   switch (answer){
     case 0x00:
       receiveAnswerA();
@@ -42,7 +43,7 @@ void Client::receiveAnswer(string& command){
 
 void Client::receiveAnswerA(){
     uint32_t numberBus;
-    connector->creceive(&numberBus,sizeof(numberBus));
+    connector.creceive(&numberBus,sizeof(numberBus));
     std::cout << "Un colectivo de la línea " <<numberBus<<" ha sido agregado."
     << std::endl;
 }
@@ -52,8 +53,8 @@ void Client::receiveAnswerA(){
 void Client::receiveAnswerL(){
   uint32_t numberBus; /*cambiar nombre*/
   uint32_t timeBus;
-  connector->creceive(&numberBus,sizeof(numberBus));
-  connector->creceive(&timeBus,sizeof(timeBus));
+  connector.creceive(&numberBus,sizeof(numberBus));
+  connector.creceive(&timeBus,sizeof(timeBus));
   int minute = timeBus/60;
   std::cout << "La línea con el recorrido más rápido es la "<<numberBus<<
   ", que tarda "<<minute<<" minutos y "<<timeBus-minute*60<<
@@ -64,16 +65,17 @@ void Client::receiveAnswerL(){
 void Client::receiveAnswerR(){
     uint32_t numberBus; /*cambiar nombre*/
     uint32_t timeBus;
-    connector->creceive(&numberBus,sizeof(numberBus));
-    connector->creceive(&timeBus,sizeof(timeBus));
+    connector.creceive(&numberBus,sizeof(numberBus));
+    connector.creceive(&timeBus,sizeof(timeBus));
     int minute = timeBus/60;
     std::cout << "El colectivo de la línea " <<numberBus<<" tardará "<<minute<<
-    " minutos y "<<timeBus - minute*60<< " segundos en llegar a destino."<< std::endl;
+    " minutos y "<<timeBus - minute*60<< " segundos en llegar a destino."
+    << std::endl;
 }
 
 void Client::receiveAnswerF(){
     uint32_t numberBus; /*cambiar nombre*/
-    connector->creceive(&numberBus,sizeof(numberBus));
+    connector.creceive(&numberBus,sizeof(numberBus));
     std::cout << "Faltan " <<numberBus<<
     " minutos para que llegue el siguiente colectivo." << std::endl;
 }
@@ -102,11 +104,11 @@ void Client::ejecuteCommand(string& command){
   }
   char* ch = (char*)v[1].c_str();
   uint32_t date = getUnixTime(v[0]);
-  connector->csend(ch,1); /*Envio el comando a ejecutar*/
-  connector->csend(&date,4); /*Envio la hora en forma time unix*/
+  connector.csend(ch,1); /*Envio el comando a ejecutar*/
+  connector.csend(&date,4); /*Envio la hora en forma time unix*/
   for (size_t i = 2; i < v.size(); i++) {
     int numberBus = stoi(v[i]);
-    connector->csend(&numberBus,sizeof(numberBus));
+    connector.csend(&numberBus,sizeof(numberBus));
   }
   receiveAnswer(v[1]);
 }
@@ -121,13 +123,13 @@ void Client::getCommand(){
   }
   char buffer[2] = "-";
   int size = 1;
-  connector->csend(buffer,size);
+  connector.csend(buffer,size);
 }
 
 void Client::ejecutar(int argc, char const *argv[]){
   const char* ip = argv[1];
   int port = atoi(argv[2]);
-  connector->cconnect(ip,port);
+  connector.cconnect(ip,port);
   getCommand();
 }
 

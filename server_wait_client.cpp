@@ -3,33 +3,30 @@
 #include <string>
 #include "server_socket_acceptor.h"
 #include "server.h"
-#include "server_attend_client.h"
+#include "server_wrapper.h"
 
 using std::string;
 using std::cin;
 
 WaitClient::WaitClient(Server& serverRef):server(serverRef){
   estateActive = true;
-  attends.reserve(10);
 }
 
 WaitClient::~WaitClient(){
-  size_t size = attends.size();
+  size_t size = wrappers.size();
   for (size_t i = 0; i < size; i++){
-    attends[i].join();
+    wrappers[i].join();
   }
 }
 
 void WaitClient::run(){
-  //std::cout << "wait client run" << std::endl;
   SocketAcceptor& acceptor = server.getAcceptor();
   while (estateActive){
     try{
       SocketConnector connector = acceptor.saccept();
-      AttendClient attendClient(&server,connector);
-      attends.push_back(std::move(attendClient));
-      attends.back().start();
-      checkAttends();
+      Wrapper wrapper(&server,connector);
+      wrappers.push_back(std::move(wrapper));
+      checkThreads();
     }
     catch(int n){
         finish();
@@ -40,13 +37,11 @@ void WaitClient::run(){
 Si el hilo ya no se encuentra activo, lo joineo y lo saco del vector, el hilo
 que quedo dentro attends queda no joinable que se va a liberar en el destructor
 */
-void WaitClient::checkAttends(){
-  //std::cout << "check" << std::endl;
-  for (size_t i = 0; i < attends.size(); i++){
-    if (!attends[i].isActive()){
-      //std::cout << "Tengo un cliente inactivo" << std::endl;
-      AttendClient attend = std::move(attends[i]);
-      attend.join();
+void WaitClient::checkThreads(){
+  for (size_t i = 0; i < wrappers.size(); i++){
+    if (!wrappers[i].isActive()){
+      Wrapper wrapper = std::move(wrappers[i]);
+      wrapper.join();
     }
   }
 }

@@ -13,8 +13,11 @@ protected:
   uint8_t answer;
   SocketConnector& connector;
 public:
-  EjecuteCommand(std::vector<int>& parameters,Server* serverPtr,uint8_t answerAux,SocketConnector& connectorRef);
-  ~EjecuteCommand();
+  EjecuteCommand(std::vector<int>& parameters,Server* serverPtr
+    ,uint8_t answerAux,SocketConnector& connectorRef);
+  void sendError();
+  virtual void operator()();
+  virtual ~EjecuteCommand();
 };
 
 #endif /* EJECUTECOMMAND_H */
