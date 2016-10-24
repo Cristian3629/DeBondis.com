@@ -26,7 +26,7 @@ void WaitClient::run(){
     try{
       SocketConnector connector = acceptor.saccept();
       std::cout << "acepté un cliente" << std::endl;
-      AttendClient attendClient(&server,std::move(connector));
+      AttendClient attendClient(&server,connector);
       std::cout << "inserto un attendedor" << std::endl;
       std::cout << "size()" <<(int)attends.size()<< std::endl;
       std::cout << "capacity()" <<(int)attends.capacity()<< std::endl;

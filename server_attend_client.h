@@ -24,7 +24,7 @@ private:
   void ejecuteCommandR(std::vector<int>& parameters);
   void ejecuteCommandL(std::vector<int>& parameters);
 public:
-  AttendClient(Server* serverRef,SocketConnector connector);
+  AttendClient(Server* serverRef,SocketConnector& connector);
   AttendClient(AttendClient&& other);
   AttendClient& operator=(AttendClient&& other);
   void join();
