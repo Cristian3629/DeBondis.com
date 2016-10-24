@@ -1,4 +1,5 @@
 #include "server_attend_client.h"
+#include "server_ejecute_command_a.h"
 #include "server_date.h"
 #include <iostream> //cout
 #include "server.h"
@@ -56,8 +57,8 @@ string AttendClient::getCommand(){
     state = false;
   }else{
     std::cerr << "Comando "<<command<<" recibido." << std::endl;
-    std::cout << "thread id" <<thread.get_id()<< std::endl;
-    std::cout << "state:" <<state<< std::endl;
+    //std::cout << "thread id" <<thread.get_id()<< std::endl;
+    //std::cout << "state:" <<state<< std::endl;
   }
   return mycommand;
 }
@@ -78,7 +79,7 @@ vector<int> AttendClient::getParameters(string command){
 void AttendClient::run(){
   string command = getCommand();
   while (state){
-    std::cout << "state true" << std::endl;
+    //std::cout << "state true" << std::endl;
     vector<int> parameters = getParameters(command);
     ejecuteCommand(command,parameters);
     command = getCommand();
@@ -93,11 +94,13 @@ void AttendClient::join(){
 }
 
 void AttendClient::ejecuteCommandA(vector<int>& parameters){
-  server->addBus(parameters[1],parameters[0]);
-  uint32_t numberBus = parameters[1];
-  uint8_t answer = 0x00;
-  myConnector.csend(&answer,sizeof(answer));
-  myConnector.csend(&numberBus,sizeof(numberBus));
+  // server->addBus(parameters[1],parameters[0]);
+  // uint32_t numberBus = parameters[1];
+  // uint8_t answer = 0x00;
+  // myConnector.csend(&answer,sizeof(answer));
+  // myConnector.csend(&numberBus,sizeof(numberBus));
+  EjecuteCommandA command(parameters,server,myConnector);
+  command();
 }
 
 void AttendClient::ejecuteCommandF(vector<int>& parameters){
@@ -188,8 +191,10 @@ void AttendClient::ejecuteCommandR(std::vector<int>& parameters){
 }
 
 AttendClient::AttendClient(AttendClient&& other){
-  std::cout << "move constructor attendClient" << std::endl;
+  //std::cout << "move constructor attendClient" << std::endl;
+  //std::cout << "other.thread id" <<other.thread.get_id()<< std::endl;
   this->thread = std::move(other.thread);
+  //std::cout << "this.thread" <<thread.get_id()<< std::endl;
   this->server = other.server;
   this->myConnector = std::move(other.myConnector);
   this->mymap = std::move(other.mymap);
@@ -199,10 +204,10 @@ AttendClient::AttendClient(AttendClient&& other){
 
 AttendClient& AttendClient::operator=(AttendClient&& other){
   if (this!=&other){
-    std::cout << "move assigment attendClient" << std::endl;
-    std::cout << "other.thread id" <<other.thread.get_id()<< std::endl;
+    //std::cout << "move assigment attendClient" << std::endl;
+    //std::cout << "other.thread id" <<other.thread.get_id()<< std::endl;
     this->thread = std::move(other.thread);
-    std::cout << "this.thread" <<thread.get_id()<< std::endl;
+    //std::cout << "this.thread" <<thread.get_id()<< std::endl;
     this->server = other.server;
     this->myConnector = std::move(other.myConnector);
     this->mymap = std::move(other.mymap);
