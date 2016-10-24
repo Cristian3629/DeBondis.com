@@ -8,7 +8,7 @@ private:
   int timeLinux;
   struct tm  ts;
 public:
-  Date(int timeL);
+  explicit Date(int timeL);
   Date();
   void print() const;
   int getSeconds() const;
@@ -16,11 +16,11 @@ public:
   void decreaseMinute(int minute);
   void incrementeMinute(int minute);
   void addSeconds(int second);
-  int getMinutes();
-  int getHour();
-  int getDay();
-  int getMonth();
-  int getYear();
+  int getMinutes() const;
+  int getHour() const;
+  int getDay() const;
+  int getMonth() const;
+  int getYear() const;
   int operator-(const Date& otherDate) const;
   ~Date();
 };

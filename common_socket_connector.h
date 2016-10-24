@@ -6,7 +6,7 @@ class SocketConnector{
 private:
   int fd;
 public:
-  SocketConnector(int fd_aux);
+  explicit SocketConnector(int fd_aux);
   SocketConnector();
   SocketConnector(const SocketConnector&) = delete;
   SocketConnector& operator=(const SocketConnector&) = delete;

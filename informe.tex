@@ -1,0 +1,92 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{vmargin}
+\setpapersize{A4}
+\setmargins
+{2.5cm}       % margen izquierdo
+{1.5cm} % margen superior
+{16.5cm}% anchura del texto
+{23.42cm} % altura del texto
+{10pt} % altura de los encabezados
+{1cm} % espacio entre el texto y los encabezados
+{0pt} % altura del pie de página
+{2cm}% espacio entre el texto y el pie de página
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		{\scshape\LARGE Universidad de Buenos Aires \par}
+		\vspace{1cm}
+		{\scshape\Large Taller de Programación (75.42)\par}
+		\vspace{1.5cm}
+		{\huge\bfseries DeBondis.com \par}
+		\vspace{2cm}
+		{\Large\itshape Cristian González\par}
+		\vspace{2cm}
+		{\Large\itshape 94719 \par}
+	\end{titlepage}
+	
+	
+	
+	
+	
+	
+	%Índice.
+	\tableofcontents
+	\newpage
+\section{Clases}
+\subsection{Server}
+Modela la responsabilidad del servidor, se encarga de subir toda la información a partir de los archivos, cómo también hacer que todos los hilos puedan acceder a toda la información sobre los recorridos y los colectivos en tránsito.
+
+\subsection{Client}
+Se encarga de poder interpretar los comandos y enviar la información pertinente para su consulta, una vez que tenga una respuesta del server (ya sea un error o no) imprimir el resultado por pantalla al cliente.
+
+\subsection{Date}
+Diseñe esta clase para encapsula la fecha y hora, a modo de encapsular un poco el comportamiento y poder usarlo con mayor comodidad, por ejemplo haciendo sobrecarga del operator -. También tiene una responsabilidad de dado un timeLinux poder setear todas las variables, hora, día, etc.
+
+
+\subsection{WaitCharacter}
+Clase que hereda de Thread que encarga de esperar por stdin el caracter "q" y en caso de que suceda eso, avisar el server que debe "apagarse".
+
+\subsection{TimeStop}
+
+Esta se encarga de encapsula el tiempo que existe entre 2 Paradas, de tal forma poder consultarle el tiempo que existe entre las paradas, si cierta parada es el first o el end.
+
+
+
+\subsection{WaitClient}
+
+Se encarga de esperar una nueva conexión, una vez que un nuevo cliente se conecta, este se encarga de lanzar otro hilo para atenderlo, cómo también se encarga de dada un vez conexión chequear cómo se encuentran los otros clientes (si el cliente de cierto hilo tiene alguna nueva consulta). Para la decisión de chequear cada cierto tiempo fue a modo de que supongo que el lapso entre que se conecta un cliente y otro no es mucho.
+
+\subsection{Thread}
+Se encarga de de modelar el comportamiento de un thread, para crearlo se tiene que proveer los datos que va a necesitar ese thread como la función/método a ejecutar.
+
+
+\subsection{Colectivo}
+Se encarga de ser contener la hora y fecha en la cual salió y qué recorrido tiene. 
+
+\subsection{Colectivo Recorrido}
+Este encapsula todo el recorrido de un colectivo, es la información que se sube de paradas.txt y bondis.txt de tal forma que en esta clase se puede obtener toda la información respecto a tiempo para llegar de una parada a otra o sí pasa por cierta parada.
+
+\subsection{Attend Client}
+Esta es la clase más compleja, se encarga de resolver las consultas de un cliente, poder pedirle al server toda la información necesaria para resolver dicha consulta y enviar al cliente la respuesta de la query.
+
+
+
+\begin{figure}[h]
+\includegraphics[width=1.1\linewidth]{Attend}
+
+\label{fig:Attend}
+\end{figure}
+
+
+\section{Links}
+Link del repositorio:https://github.com/Cristian3629/DeBondis.com
+
+\end{document}

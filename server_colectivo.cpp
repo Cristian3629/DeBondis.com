@@ -3,7 +3,8 @@
 #include <iostream> //cout
 
 
-Colectivo::Colectivo(ColectivoRecorrido& recorridoColectivo, int timeLnx):recorrido(recorridoColectivo),timeLinux(timeLnx){
+Colectivo::Colectivo(ColectivoRecorrido& recorridoColectivo, int timeLnx)
+:recorrido(recorridoColectivo),timeLinux(timeLnx){
 }
 
 

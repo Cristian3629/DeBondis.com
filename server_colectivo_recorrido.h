@@ -12,7 +12,7 @@ private:
   ColectivoRecorrido(const ColectivoRecorrido&) = delete;
   ColectivoRecorrido& operator=(const ColectivoRecorrido&) = delete;
 public:
-  ColectivoRecorrido(int number);
+  explicit ColectivoRecorrido(int number);
   ColectivoRecorrido(ColectivoRecorrido&& other);
   ColectivoRecorrido& operator=(ColectivoRecorrido&& other);
   ~ColectivoRecorrido();

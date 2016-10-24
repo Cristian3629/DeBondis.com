@@ -2,6 +2,7 @@
 #define CLIENT_H
 #include "common_socket_connector.h"
 #include <map>
+#include <string>
 
 class Client{
 private:

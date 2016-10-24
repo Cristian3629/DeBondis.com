@@ -6,6 +6,7 @@
 #include <string.h>
 #include "common_socket_connector.h"
 #include <vector>
+#include <string>
 
 using std::pair;
 using std::string;
@@ -28,22 +29,22 @@ void Client::receiveAnswer(string& command){
     case 0x02:
       receiveAnswerF();
       break;
-    case 0x03:
+    case 0x04:
       receiveAnswerR();
       break;
-    case 0x04:
+    case 0x03:
       receiveAnswerL();
       break;
       case 0xff:
         std::cout << "Error" << std::endl;
   }
-
 }
 
 void Client::receiveAnswerA(){
     uint32_t numberBus;
     connector->creceive(&numberBus,sizeof(numberBus));
-    std::cout << "Colectivo de la línea " <<numberBus<<" ha sido agregado." << std::endl;
+    std::cout << "Un colectivo de la línea " <<numberBus<<" ha sido agregado."
+    << std::endl;
 }
 
 
@@ -54,7 +55,9 @@ void Client::receiveAnswerL(){
   connector->creceive(&numberBus,sizeof(numberBus));
   connector->creceive(&timeBus,sizeof(timeBus));
   int minute = timeBus/60;
-  std::cout << "La línea " << numberBus <<" tardará " <<minute<<" minutos y " <<timeBus -minute*60 << " segundos en llegar a destino."<< std::endl;
+  std::cout << "La línea con el recorrido más rápido es la "<<numberBus<<
+  ", que tarda "<<minute<<" minutos y "<<timeBus-minute*60<<
+  " segundos en llegar a destino." << std::endl;
 }
 
 
@@ -64,13 +67,15 @@ void Client::receiveAnswerR(){
     connector->creceive(&numberBus,sizeof(numberBus));
     connector->creceive(&timeBus,sizeof(timeBus));
     int minute = timeBus/60;
-    std::cout << "El colectivo de la línea " <<numberBus<<" tardará "<<minute<<" minutos y "<<timeBus - minute*60<< " segundos en llegar."<< std::endl;
-
+    std::cout << "El colectivo de la línea " <<numberBus<<" tardará "<<minute<<
+    " minutos y "<<timeBus - minute*60<< " segundos en llegar a destino."<< std::endl;
 }
+
 void Client::receiveAnswerF(){
     uint32_t numberBus; /*cambiar nombre*/
     connector->creceive(&numberBus,sizeof(numberBus));
-    std::cout << "Faltan " <<numberBus<< " minutos para que llegue el siguiente colectivo." << std::endl;
+    std::cout << "Faltan " <<numberBus<<
+    " minutos para que llegue el siguiente colectivo." << std::endl;
 }
 
 

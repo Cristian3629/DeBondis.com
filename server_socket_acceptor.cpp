@@ -36,7 +36,7 @@ int SocketAcceptor::sbind(string port){
 }
 
 int SocketAcceptor::slisten(int cant){
-  if(listen(this->fd,cant) == -1){
+  if (listen(this->fd,cant) == -1){
     return 1;
   }
   return 0;
@@ -45,7 +45,7 @@ int SocketAcceptor::slisten(int cant){
 
 SocketConnector SocketAcceptor::saccept(){
   int fd_connector = accept(fd,NULL,NULL);
-  if(fd_connector == -1){
+  if (fd_connector == -1){
     throw 1;
   }else{
     SocketConnector connector(fd_connector);

@@ -8,7 +8,7 @@ class WaitCharacter:public Thread{
 private:
   Server& server;
 public:
-  WaitCharacter(Server& server);
+  explicit WaitCharacter(Server& server);
   virtual void run();
   void operator()();
   ~WaitCharacter();

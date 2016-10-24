@@ -10,6 +10,8 @@
 #include "server_wait_client.h"
 #include "server_attend_client.h"
 #include "server_colectivo.h"
+#include <string>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -30,7 +32,6 @@ Server::~Server(){
   waitClient->join();
   delete(waitQ);
   delete(waitClient);
-
 }
 
 void Server::close(){
@@ -41,11 +42,9 @@ void Server::close(){
 int Server::getIndxRecordido(int number){
   size_t size = recorridos.size();
   for (size_t i = 0; i < size; i++) {
-    mtx.unlock();
     if (recorridos[i].isBus(number)){
       return i;
     }
-    mtx.unlock();
   }
   return -1;
 }
@@ -115,7 +114,6 @@ void Server::procesarRecorridos(ifstream& colectivosFile){
       /*v[0] es la linea del colectivo*/
       ColectivoRecorrido recorrido(stoi(v[0]));
       for (size_t i = 1; i < v.size()-1; i++) {
-        //std::cout << "v size" <<v.size()<< std::endl;
         bool encontrado = false;
         for (size_t j = 0; j <paradas.size() && !encontrado; j++){
           if (paradas[j].isTimeOfStop(stoi(v[i]),stoi(v[i+1]))){
@@ -136,12 +134,12 @@ ifstream Server::openFile(const char* name){
 }
 
 
-void Server::upLoadInformation(const char* nameFileColective, const char* nameFileParadas){
+void Server::upLoadInformation(const char* nameFileColective, const char*
+  nameFileParadas){
   ifstream paradasFile = openFile(nameFileParadas);
   ifstream colectivosFile = openFile(nameFileColective);
   procesarParadas(paradasFile);
   procesarRecorridos(colectivosFile);
-
 }
 
 SocketAcceptor& Server::getAcceptor(){

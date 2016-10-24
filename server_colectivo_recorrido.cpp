@@ -24,15 +24,15 @@ int ColectivoRecorrido::getTimeToStop(int parada){
   int suma = 0;
   bool find = false;
   for (size_t i = 0; i < tiemposDeParadas.size(); i++) {
-    if(tiemposDeParadas[i].isStart(parada) || tiemposDeParadas[i].isEnd(parada)){
+    if (tiemposDeParadas[i].isStart(parada)||tiemposDeParadas[i].isEnd(parada)){
       find = true;
     }
     suma += tiemposDeParadas[i].getTime();
-    if(tiemposDeParadas[i].isEnd(parada)){
+    if (tiemposDeParadas[i].isEnd(parada)){
       return suma;
     }
   }
-  if(!find){
+  if (!find){
     return -1;
   }
   return 0;
@@ -48,17 +48,13 @@ ColectivoRecorrido& ColectivoRecorrido::operator=(ColectivoRecorrido&& other){
   this->numberBus = other.numberBus;
   other.numberBus = 0;
   return *this;
-
 }
 
-
 void ColectivoRecorrido::print(){
-  //std::cout << "ColectivoRecorrido::print" << std::endl;
   for (size_t i = 0; i < tiemposDeParadas.size(); i++) {
     tiemposDeParadas[i].print();
   }
 }
 void ColectivoRecorrido::addTimeStop(TimeStop& timeStop){
-  //std::cout << "addTimeStop" << std::endl;
   tiemposDeParadas.push_back(timeStop);
 }

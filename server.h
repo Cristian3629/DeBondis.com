@@ -9,6 +9,7 @@
 #include "server_time_stop.h"
 #include "server_thread.h"
 #include "server_colectivo.h"
+#include <string>
 
 class WaitClient;
 class WaitCharacter;
@@ -27,7 +28,8 @@ private:
   void procesarRecorridos(std::ifstream& coletivos);
   void procesarParadas(std::ifstream& paradasFile);
   std::ifstream openFile(const char* name);
-  void upLoadInformation(const char* nameFileColective, const char* nameFileParadas);
+  void upLoadInformation(const char* nameFileColective, const char*
+    nameFileParadas);
   int getIndxRecordido(int number);
 
 public:
