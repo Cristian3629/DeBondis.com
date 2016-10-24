@@ -95,26 +95,6 @@ void AttendClient::join(){
   }
 }
 
-void AttendClient::ejecuteCommandA(vector<int>& parameters){
-  EjecuteCommandA command(parameters,server,myConnector);
-  command();
-}
-
-void AttendClient::ejecuteCommandF(vector<int>& parameters){
-    EjecuteCommandF command(parameters,server,myConnector);
-    command();
-  }
-
-void AttendClient::ejecuteCommandL(vector<int>& parameters){
-  EjecuteCommandL command(parameters,server,myConnector);
-  command();
-}
-
-
-void AttendClient::ejecuteCommandR(std::vector<int>& parameters){
-  EjecuteCommandR command(parameters,server,myConnector);
-  command();
-}
 
 AttendClient::AttendClient(AttendClient&& other){
   this->thread = std::move(other.thread);

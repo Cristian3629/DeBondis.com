@@ -19,10 +19,6 @@ private:
   int getNumberOfBlocks(std::string command);
   void answerQuery();
   void ejecuteCommand(std::string& command, std::vector<int>& parameters);
-  void ejecuteCommandA(std::vector<int>& parameters);
-  void ejecuteCommandF(std::vector<int>& parameters);
-  void ejecuteCommandR(std::vector<int>& parameters);
-  void ejecuteCommandL(std::vector<int>& parameters);
 public:
   AttendClient(Server* serverRef,SocketConnector& connector);
   AttendClient(AttendClient&& other);
