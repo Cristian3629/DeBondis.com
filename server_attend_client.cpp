@@ -1,9 +1,4 @@
 #include "server_attend_client.h"
-#include "server_ejecute_command_a.h"
-#include "server_ejecute_command_a.h"
-#include "server_ejecute_command_f.h"
-#include "server_ejecute_command_r.h"
-#include "server_ejecute_command_l.h"
 #include "server_wrapper_ejecute_command.h"
 #include "server_date.h"
 #include <iostream> //cout
